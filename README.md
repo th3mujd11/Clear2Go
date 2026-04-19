@@ -94,7 +94,7 @@ Android Studio: https://developer.android.com/studio
 Firebase: https://firebase.google.com/
 Firebase Analytics: https://firebase.google.com/docs/analytics
 
-IP-uri aplicatie web: 89.165.219.117:5173, 188.173.93.184:5173
+IP-uri aplicatie web: to be completed
 
 Tutorial utilizare aplicatie web : https://drive.google.com/file/d/1xvFSC--XIOhs8RGfQ4frBat3GXSfbPH8/view?usp=sharing
 
