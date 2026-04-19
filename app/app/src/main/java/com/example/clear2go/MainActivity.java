@@ -6,6 +6,9 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
 
+import androidx.activity.result.ActivityResult;
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
@@ -37,9 +40,10 @@ public class MainActivity extends AppCompatActivity {
     private FirebaseAuth mAuth;
     private FirebaseAnalytics mFirebaseAnalytics;
     private DatabaseReference databaseRef;
-    private static final int RC_SIGN_IN  =100;
     private static final String TAG="GOOGLE_SIGN_IN_TAG";
     private GoogleSignInClient googleSignInClient;
+    private ActivityResultLauncher<Intent> signInLauncher;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -50,6 +54,11 @@ public class MainActivity extends AppCompatActivity {
         databaseRef = FirebaseDatabase.getInstance().getReference().child("messages");
         binding = ActivityMainBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
+
+        signInLauncher = registerForActivityResult(
+                new ActivityResultContracts.StartActivityForResult(),
+                result -> handleSignInResult(result));
+
         GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
                 .requestIdToken(getString(R.string.default_web_client_id))
                 .requestEmail()
@@ -60,7 +69,7 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View v) {
                 Log.d(TAG, "onClick: begin google sigh in");
                 Intent intent = googleSignInClient.getSignInIntent();
-                startActivityForResult(intent,RC_SIGN_IN);
+                signInLauncher.launch(intent);
             }
         });
         Bundle bundle = new Bundle();
@@ -80,24 +89,18 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    @Override
-    protected void onActivityResult (int requestCode, int resultCode, @Nullable Intent data)
-    {
-        super.onActivityResult(requestCode,resultCode,data);
-        if(requestCode==RC_SIGN_IN)
-        {
-            Log.d(TAG, "onActivityResult: google sighin intent result");
-            Task<GoogleSignInAccount> accountTask=GoogleSignIn.getSignedInAccountFromIntent(data);
-            try {
-                GoogleSignInAccount account = accountTask.getResult(ApiException.class);
-                firebaseAuthWithGoogleAcc(account);
-            }
-            catch (Exception e)
-            {
-                Log.d(TAG, "onActivityResult: "+e.getMessage());
-            }
+    private void handleSignInResult(ActivityResult result) {
+        Log.d(TAG, "handleSignInResult: resultCode=" + result.getResultCode() + " data=" + (result.getData() != null));
+        Task<GoogleSignInAccount> accountTask = GoogleSignIn.getSignedInAccountFromIntent(result.getData());
+        try {
+            GoogleSignInAccount account = accountTask.getResult(ApiException.class);
+            Log.d(TAG, "handleSignInResult: got account " + account.getEmail());
+            firebaseAuthWithGoogleAcc(account);
+        } catch (ApiException e) {
+            Log.e(TAG, "handleSignInResult: ApiException statusCode=" + e.getStatusCode() + " message=" + e.getMessage(), e);
+        } catch (Exception e) {
+            Log.e(TAG, "handleSignInResult: exception", e);
         }
-
     }
 
     private void firebaseAuthWithGoogleAcc(GoogleSignInAccount account) {

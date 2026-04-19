@@ -3,7 +3,7 @@
     "project_number": "341512314786",
     "firebase_url": "https://clear2go1-default-rtdb.europe-west1.firebasedatabase.app",
     "project_id": "clear2go1",
-    "storage_bucket": "clear2go1.appspot.com"
+    "storage_bucket": "clear2go1.firebasestorage.app"
   },
   "client": [
     {
@@ -13,7 +13,20 @@
           "package_name": "com.example.clear2go"
         }
       },
-      "oauth_client": [],
+      "oauth_client": [
+        {
+          "client_id": "341512314786-iakm99j57goo1msvv98hkrlg36jv1j1b.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.clear2go",
+            "certificate_hash": "116ca9becc20855e5395d3abd6266737b0de6e50"
+          }
+        },
+        {
+          "client_id": "341512314786-uliaqjhemph8hcju0d9ojkle2hh7vdcd.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
       "api_key": [
         {
           "current_key": "AIzaSyCZ0fkpQKgW-YTz1xDwa47-Q8HjtOH2iBg"
@@ -21,7 +34,12 @@
       ],
       "services": {
         "appinvite_service": {
-          "other_platform_oauth_client": []
+          "other_platform_oauth_client": [
+            {
+              "client_id": "341512314786-uliaqjhemph8hcju0d9ojkle2hh7vdcd.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
         }
       }
     }
