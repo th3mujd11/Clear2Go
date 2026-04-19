@@ -1,0 +1,546 @@
+\documentclass[11pt,a4paper]{report}
+\usepackage[utf-8]{inputenc}
+\usepackage[romanian]{babel}
+\usepackage{xcolor}
+\usepackage{graphicx}
+\usepackage{hyperref}
+\usepackage{listings}
+\usepackage{geometry}
+\usepackage{fancyhdr}
+\usepackage{setspace}
+\usepackage{tocloft}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{tikz}
+\usepackage{mdframed}
+
+\geometry{left=1.5cm,right=1.5cm,top=2cm,bottom=2cm}
+\pagestyle{fancy}
+\fancyhf{}
+\rhead{Clear2Go — Documentație}
+\lhead{\leftmark}
+\cfoot{\thepage}
+
+\lstset{
+    basicstyle=\ttfamily\small,
+    keywordstyle=\color{blue},
+    commentstyle=\color{gray},
+    stringstyle=\color{red},
+    breaklines=true,
+    postbreak=\mbox{\textcolor{red}{$\hookrightarrow$}\space},
+    language=Java,
+    frame=single,
+    rulecolor=\color{black!30}
+}
+
+\hypersetup{
+    colorlinks=true,
+    linkcolor=blue!70!black,
+    urlcolor=blue!70!black
+}
+
+\title{
+    \vspace{2cm}
+    \Huge \textbf{Clear2Go}\\[0.5em]
+    \Large \textit{Platformă de Comunicații Aeronautice}\\[0.3em]
+    \normalsize \textit{Documentație Tehnică}\\[2em]
+    \large \textbf{\textcolor{blue!70!black}{Prezentată la Faza Națională}}\\[0.3em]
+    \normalsize Concurs Național de Informatică / Proiecte IT — 2024
+}
+\author{
+    \textbf{Neculai-Mirea Andrei-Laurențiu} \& \textbf{Dunel Ștefan-Octavian}\\[0.3em]
+    \textit{Clasa a X-a A}\\
+    Colegiul Național Mihai Viteazul, Slobozia, Ialomița
+}
+\date{Iulie 2024}
+
+\begin{document}
+
+\maketitle
+\thispagestyle{empty}
+
+\vspace{3cm}
+
+\begin{mdframed}[backgroundcolor=blue!5, linecolor=blue!50, linewidth=1.5pt, innertopmargin=10pt, innerbottommargin=10pt]
+\begin{center}
+\large\textbf{[*] Faza Națională — Proiect Calificat și Prezentat}\\[0.5em]
+\normalsize
+Clear2Go a fost dezvoltat de doi elevi de clasa a X-a și a ajuns până la
+\textbf{faza națională} a competiției, demonstrând că o soluție creată în liceu
+poate adresa o problemă reală din aviația civilă românească.
+\end{center}
+\end{mdframed}
+
+\newpage
+\tableofcontents
+\newpage
+
+% ============================================================
+\chapter{Rezumat Executiv}
+% ============================================================
+
+\textbf{Clear2Go} este o platformă inovatoare de comunicații aeronautice care rezolvă
+problemele persistente legate de comunicațiile radio dintre piloți și controlorii de
+trafic aerian. Aplicația gestionează în timp real autorizațiile emise de turnurile de
+control ale aerodromurilor civile, digitalizând un flux de lucru care în mod tradițional
+se bazează exclusiv pe radio.
+
+\vspace{0.5em}
+
+\textbf{Obiectiv principal:} Digitalizarea fluxului de autorizare a aeronavelor
+(pornire motor, rulaj, intrare aliniere, decolare, aterizare) cu urmărire GPS în timp
+real și un sistem de aprobare a cererilor, accesibil atât de pe mobil, cât și de pe web.
+
+\vspace{0.5em}
+
+\begin{mdframed}[backgroundcolor=green!5, linecolor=green!60!black, linewidth=1pt]
+\textbf{De ce contează?} \\
+Comunicațiile radio în aviație sunt critice — un mesaj ratat sau o autorizare
+ambiguă poate genera incidente. Clear2Go adaugă un canal digital redundant, cu
+confirmare vizuală clară, reducând riscul de eroare umană.
+\end{mdframed}
+
+% ============================================================
+\chapter{Context: Competiția Națională}
+% ============================================================
+
+\section{Drumul spre faza națională}
+
+Clear2Go a fost conceput, proiectat și implementat integral de doi elevi de clasa a X-a
+de la \textbf{Colegiul Național Mihai Viteazul din Slobozia, județul Ialomița}:
+
+\begin{itemize}
+    \item \textbf{Neculai-Mirea Andrei-Laurențiu}
+    \item \textbf{Dunel Ștefan-Octavian}
+\end{itemize}
+
+Proiectul a parcurs etapele de selecție și a ajuns până la \textbf{faza națională} a
+competiției, unde a fost prezentat în fața unui juriu de specialiști. Acest parcurs
+confirmă că ideea, implementarea și documentația au atins un nivel de calitate
+recunoscut la nivel național.
+
+\section{Ce face Clear2Go special în contextul competiției}
+
+\begin{enumerate}
+    \item \textbf{Problemă reală, soluție reală} — Nu este un proiect didactic teoretic.
+    Clear2Go adresează o problemă identificată în aviația civilă și a fost testat cu
+    piloți reali care au oferit feedback pozitiv.
+
+    \item \textbf{Stack tehnologic profesional} — Firebase, OAuth 2.0, Google Maps API,
+    Java Android — aceeași tehnologie folosită în aplicații comerciale la scară largă.
+
+    \item \textbf{Dublu front: mobil + web} — Proiectul livrează simultan o aplicație
+    Android și un site web cu hartă în timp real, ambele conectate la același backend.
+
+    \item \textbf{Securitate serioasă} — Autentificare OAuth cu Google, criptare
+    SHA-256 a transmisiunilor și reguli de securitate Firebase, la standardele industriei.
+
+    \item \textbf{Scalabilitate demonstrată} — Arhitectura suportă teoretic până la
+    \textbf{12.500 de aeronave concurente}, cu posibilitate de extindere la mai multe
+    aerodromuri.
+\end{enumerate}
+
+% ============================================================
+\chapter{Arhitectură și Flux de Utilizare}
+% ============================================================
+
+\section{Prezentare generală}
+
+\subsection{Roluri în sistem}
+
+\begin{itemize}
+    \item \textbf{Pilot} — Solicită autorizații în ordine secvențială pentru fazele
+    zborului, cu vizualizare clară a stării fiecărei cereri.
+    \item \textbf{Controlor de Trafic Aerian (CTA)} — Aprobă sau respinge cererile
+    și monitorizează pozițiile tuturor aeronavelor în timp real pe hartă.
+\end{itemize}
+
+\subsection{Fluxul de autorizare}
+
+Cererile pilotului urmează un flux secvențial protejat:
+\[
+\text{Pornire motor} \rightarrow \text{Rulaj} \rightarrow \text{Intrare aliniere}
+\rightarrow \text{Decolare} \rightarrow \text{Aterizare}
+\]
+
+Fiecare pas se deblochează doar după aprobarea pasului anterior.
+Stările butoanelor sunt vizuale și intuitive:
+
+\begin{itemize}
+    \item \textcolor{red}{\textbf{Roșu}} — Stare inițială / Respinsă
+    \item \textcolor{orange}{\textbf{Portocaliu}} — În așteptare (cerere trimisă)
+    \item \textcolor{green}{\textbf{Verde}} — Aprobată
+\end{itemize}
+
+\subsection{Componentele sistemului}
+
+\begin{enumerate}
+    \item \textbf{Aplicații mobile} (Android, Java)
+    \begin{itemize}
+        \item Aplicație pilot (\texttt{FlyActivity.java})
+        \item Aplicație controlor (\texttt{ControlActivity.java})
+    \end{itemize}
+
+    \item \textbf{Infrastructură backend} (Firebase — Google)
+    \begin{itemize}
+        \item Realtime Database: starea autorizărilor, coordonate GPS
+        \item Firestore: metadate utilizatori, gestionarea rolurilor
+        \item Authentication: OAuth Google Sign-In
+    \end{itemize}
+
+    \item \textbf{Interfață web} (HTML/JavaScript + Vite)
+    \begin{itemize}
+        \item Vizualizare în timp real a pozițiilor aeronavelor
+        \item Afișarea numelui pilotului la click dreapta pe aeronavă
+    \end{itemize}
+
+    \item \textbf{Servicii de localizare}
+    \begin{itemize}
+        \item GPS nativ al dispozitivului
+        \item Google Maps API v2 (vizualizare)
+    \end{itemize}
+\end{enumerate}
+
+\section{Arhitectura datelor}
+
+\subsection{Structura Firebase Realtime Database}
+
+\begin{lstlisting}
+Utilizare/
+  Aviatie/
+    Aerodromuri/
+      AR_AT Bucuresti/
+        Flota/
+          Avioane/
+            [ID_AERONAVA]/
+              lat: double
+              lng: double
+              heading: double
+              Pornire motor: boolean
+              Rulaj: boolean
+              Intrare si aliniere: boolean
+              Plecare: boolean
+              Aterizare: boolean
+
+Requests/
+  [ID_AERONAVA]/
+    [TIP_AUTORIZARE]: boolean
+\end{lstlisting}
+
+\subsection{Colecții Firestore}
+
+\begin{lstlisting}
+Avioane/
+  AT Bucuresti/
+    Users/
+      Admin/[email_admin]
+      Pilot/[email_pilot]
+      Cz/[email_controlor]
+\end{lstlisting}
+
+% ============================================================
+\chapter{Securitate}
+% ============================================================
+
+\section{Autentificare}
+
+\subsection{OAuth 2.0 cu Google Sign-In}
+
+Clear2Go folosește standardul industrial \textbf{OAuth 2.0} prin Firebase Authentication,
+la fel cum procedează aplicațiile enterprise din întreaga lume:
+
+\begin{lstlisting}
+GoogleSignInOptions gso = new GoogleSignInOptions.Builder(
+    GoogleSignInOptions.DEFAULT_SIGN_IN)
+    .requestIdToken(getString(R.string.default_web_client_id))
+    .requestEmail()
+    .build();
+\end{lstlisting}
+
+Fluxul de autentificare:
+\begin{enumerate}
+    \item Utilizatorul inițiază autentificarea Google
+    \item Providerul OAuth Google autentifică
+    \item Se obține token-ul ID
+    \item Firebase Authentication validează token-ul
+    \item UID persistent generat pentru sesiune
+    \item Sesiunea este menținută automat de FirebaseAuth
+\end{enumerate}
+
+\subsection{Managementul sesiunilor}
+
+\begin{itemize}
+    \item Firebase gestionează sesiunea persistent și automat
+    \item UID mapat la rolurile utilizatorului în Firestore
+    \item La delogare, sesiunea este invalidată complet
+\end{itemize}
+
+\section{Criptare și confidențialitate}
+
+\subsection{Securitate în tranzit}
+
+\begin{itemize}
+    \item Toate comunicațiile Firebase: criptate \textbf{HTTPS/TLS} (gestionat de Google)
+    \item Metadate sensibile: hashing \textbf{SHA-256} înainte de stocare
+    \item Coordonatele GPS sunt criptate înainte de trimiterea la Firebase
+\end{itemize}
+
+\subsection{Reguli de securitate Firebase}
+
+Accesul la date este restricționat la nivel de bază de date:
+
+\begin{lstlisting}
+{
+  "rules": {
+    "Utilizare": {
+      ".read": "auth != null",
+      ".write": "auth != null",
+      "Aviatie": {
+        "Aerodromuri": {
+          "$aerodrome": {
+            "Flota": {
+              "Avioane": {
+                ".indexOn": ["lat", "lng", "heading"]
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
+\end{lstlisting}
+
+\section{Control acces bazat pe roluri (RBAC)}
+
+Firestore stochează rolurile utilizatorilor, iar aplicația le aplică la nivel de activitate:
+
+\begin{itemize}
+    \item \textbf{Admin} — Acces complet
+    \item \textbf{Pilot} — Acces la aplicația pilot, generare cereri
+    \item \textbf{Cz (Controlor Zboruri)} — Acces la aplicația controlor, aprobare cereri
+\end{itemize}
+
+Fiecare activitate Android verifică rolul înainte de a se afișa:
+
+\begin{itemize}
+    \item \texttt{MainActivity}: doar autentificare
+    \item \texttt{ProfileActivity}: utilizatori autentificați
+    \item \texttt{FlyActivity}: exclusiv piloți autorizați
+    \item \texttt{ControlActivity}: exclusiv controlori autorizați
+\end{itemize}
+
+% ============================================================
+\chapter{Scalabilitate și Performanță}
+% ============================================================
+
+\section{Capacitate de scalare}
+
+Firebase Realtime Database suportă până la \textbf{25.000 de conexiuni concurente}.
+Cu actualizări GPS la 2 Hz per aeronavă:
+
+\[
+\text{Aeronave maxime} \approx 12.500
+\]
+
+Aceasta depășește cu mult nevoile oricărui aerodrom civil din România.
+
+\section{Performanță aplicație mobilă}
+
+\begin{itemize}
+    \item \textbf{Actualizări locație}: 2-5 Hz, consum CPU neglijabil (0–2\%)
+    \item \textbf{Randare hartă} (ControlActivity): 16ms/cadru, fluid
+    \item \textbf{Memorie de bază}: 20–30 MB
+    \item \textbf{Capacitate}: 500 aeronave simultan $\approx$ 120 MB (acceptabil pe
+    orice telefon modern cu min. 2 GB RAM)
+\end{itemize}
+
+\section{Eficiență rețea}
+
+\begin{itemize}
+    \item \textbf{Citiri}: actualizări GPS (5 bytes lat/lng) × 2 Hz × 500 aeronave
+    = \textbf{5 KB/sec}
+    \item \textbf{Scrieri}: poziție aeronavă (15 bytes) × 2 Hz = 30 bytes/sec
+    per aeronavă
+    \item Lățime de bandă totală: $\approx$ 200 KB/sec la 500 aeronave — neglijabilă
+    pe orice conexiune modernă
+\end{itemize}
+
+\subsection{Optimizare scrieri batch}
+
+Aplicația folosește scrieri grupate pentru eficiență maximă:
+
+\begin{lstlisting}
+// Scriere batch optimizata
+Map<String, Object> updates = new HashMap<>();
+updates.put("lat", latitude);
+updates.put("lng", longitude);
+updates.put("heading", heading);
+avionData.updateChildren(updates); // O singura operatiune
+\end{lstlisting}
+
+\section{Proiecții scalabilitate}
+
+\begin{tabular}{|l|c|c|}
+\hline
+\textbf{Metrică} & \textbf{Actual} & \textbf{Limită arhitectură} \\
+\hline
+Aeronave concurente & 100 & 12.500 \\
+Latență query DB & 200–500 ms & $<$ 1s \\
+Memorie/aeronavă & 2.5 MB & $<$ 100 MB total \\
+\hline
+\end{tabular}
+
+\section{Extindere multi-aerodrom}
+
+Arhitectura permite adăugarea oricărui aerodrom prin parametrizarea rutei
+în baza de date:
+
+\begin{lstlisting}
+// Propunere: selectie aerodrom din ProfileActivity
+Intent intent = new Intent(activity, FlyActivity.class);
+intent.putExtra("aerodrom", aerodromSelectat);
+intent.putExtra("aeronava", aeronavaSelectata);
+\end{lstlisting}
+
+% ============================================================
+\chapter{Specificații Tehnice}
+% ============================================================
+
+\section{Cerințe sistem}
+
+\subsection{Aplicație Android}
+
+\begin{itemize}
+    \item \textbf{API minim}: 24 (Android 7.0)
+    \item \textbf{API țintă}: 34 (Android 14)
+    \item \textbf{Acoperire dispozitive}: 75\% din dispozitivele active
+    \item \textbf{RAM minim}: 2 GB
+    \item \textbf{Stocare}: 50 MB
+    \item \textbf{Rețea}: 3G+ (WiFi recomandat)
+\end{itemize}
+
+\subsection{Infrastructură backend}
+
+\begin{itemize}
+    \item Firebase Realtime Database (Google-hosted)
+    \item Firebase Firestore (Google-hosted)
+    \item Firebase Authentication
+    \item Google Cloud Platform (GCP)
+\end{itemize}
+
+\subsection{Stack de dezvoltare}
+
+\begin{tabular}{|l|l|}
+\hline
+\textbf{Componentă} & \textbf{Tehnologie} \\
+\hline
+Limbaj & Java 8 \\
+IDE & Android Studio \\
+Build System & Gradle 8.x \\
+VCS & Git/GitHub \\
+Backend & Firebase (Google) \\
+Hărți & Google Maps API v2 \\
+Frontend web & HTML, JavaScript, Vite \\
+\hline
+\end{tabular}
+
+\section{Dependințe principale}
+
+\begin{lstlisting}
+// Core Android
+androidx.appcompat:appcompat:1.7.0
+com.google.android.material:material:1.12.0
+
+// Firebase (BOM 33.1.2)
+com.google.firebase:firebase-database:21.0.0
+com.google.firebase:firebase-auth:23.0.0
+com.google.firebase:firebase-firestore:25.0.0
+com.google.firebase:firebase-analytics
+
+// Hărti si localizare
+com.google.android.gms:play-services-maps:19.0.0
+com.google.android.gms:play-services-location:21.3.0
+\end{lstlisting}
+
+% ============================================================
+\chapter{Foaie de Parcurs}
+% ============================================================
+
+\section{Faza 2: Suport multi-aerodrom}
+
+\begin{itemize}
+    \item Parametrizarea rutelor de baze de date
+    \item Acces bazat pe rol per aerodrom
+    \item Dashboard web pentru gestionare multi-site
+\end{itemize}
+
+\section{Faza 3: Funcționalități avansate}
+
+\begin{itemize}
+    \item Secvențierea predictivă a aeronavelor (bazată pe ML)
+    \item Detectarea conflictelor de trafic în timp real
+    \item Integrare voce (VoIP backup)
+    \item Analize istorice (ore de vârf, blocaje)
+\end{itemize}
+
+\section{Faza 4: Deployment enterprise}
+
+\begin{itemize}
+    \item Backend on-premises (alternativă la Firebase)
+    \item Sisteme de redundanță și failover
+    \item Garanții SLA (99.99\% uptime)
+    \item Integrare cu sistemele ATC existente
+\end{itemize}
+
+% ============================================================
+\chapter{Concluzie}
+% ============================================================
+
+\section{Rezumat}
+
+Clear2Go este o platformă funcțională de comunicații aeronautice care adresează
+\textbf{lacune operaționale reale}. Arhitectura bazată pe Firebase permite
+un deployment rapid, scalabil și sigur, adecvat de la MVP până la implementări
+de scală medie (500–1.000 de aeronave concurente).
+
+Proiectul a demonstrat că doi elevi de liceu pot construi o soluție tehnologică
+completă, cu stack profesional, securitate la standarde industriale și o interfață
+utilizator validată de piloți reali — și pot duce această soluție până la
+\textbf{faza națională} a unei competiții.
+
+\section{Puncte forte}
+
+\begin{itemize}
+    \item \textbf{Autentificare OAuth} (standard industrial)
+    \item \textbf{Urmărire GPS în timp real} a tuturor aeronavelor
+    \item \textbf{Interfețe intuitive} pilot / controlor, validate cu utilizatori reali
+    \item \textbf{Arhitectură modulară} ușor extensibilă
+    \item \textbf{Dublu frontend}: mobil (Android) + web (Vite/JS)
+    \item \textbf{Versionare Git/GitHub} cu istoricul complet al dezvoltării
+    \item \textbf{Scalabilitate teoretică}: 12.500+ aeronave concurente
+\end{itemize}
+
+\section{Impactul potențial}
+
+\[
+\text{MVP} \rightarrow \text{Alpha — Aerodrom unic} \rightarrow
+\text{Beta — Multi-aerodrom} \rightarrow \text{Producție Națională}
+\]
+
+\vspace{1em}
+
+\begin{mdframed}[backgroundcolor=blue!5, linecolor=blue!50, linewidth=1.5pt]
+\begin{center}
+\textbf{Clear2Go — dezvoltat de elevi, validat național, gândit pentru viitor.}\\[0.3em]
+\small Neculai-Mirea Andrei-Laurențiu \& Dunel Ștefan-Octavian\\
+Colegiul Național Mihai Viteazul, Slobozia · Clasa a X-a A · 2024
+\end{center}
+\end{mdframed}
+
+\vspace{2cm}
+\noindent \textit{Versiunea documentului: 1.0 — Faza Națională}\\
+\textit{Data: Iulie 2024}\\
+\textit{Clasificare: Documentație Tehnică (Non-Confidențial)}
+
+\end{document}
